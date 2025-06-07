@@ -14,5 +14,5 @@ def api_home(request, *args, **kwargs):
    return Response(serializer.data)
 
      
-
+ 
 

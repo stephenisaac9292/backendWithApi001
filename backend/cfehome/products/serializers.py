@@ -18,4 +18,4 @@ class ProductsSerializer(serializers.ModelSerializer):
         return obj.get_discount()
         if not isinstance (obj, Products):
             return None
-        return obj.get_discount()     
+        return obj.get_discount()      

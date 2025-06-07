@@ -7,3 +7,4 @@ class StaffRegistry(models.Model):
 
     def __str__(self):
         return self.staff_number
+ 

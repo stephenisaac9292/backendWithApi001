@@ -6,8 +6,10 @@ from accounts.models import StaffRegistry  # Make sure this is correct
 class Command(BaseCommand):
     help = 'Import staff data from a CSV file'
 
+   
+
     def handle(self, *args, **kwargs):
-        file_path = "C:/Users/hp/Documents/devProjects/data/accountsData.csv"  # Adjust path as needed
+        file_path = "C:/Users/hp/Documents/devProjects/data/userData.csv"  # Adjust path as needed
         self.import_staff_from_csv(file_path)
 
     def import_staff_from_csv(self, file_path):

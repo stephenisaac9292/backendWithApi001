@@ -14,4 +14,4 @@ class IsCustomer(BasePermission):
 
 class IsStaff(BasePermission):
     def has_permission(self, request, view):
-        return request.user and request.user.groups.filter(name='Staff').exists()
+        return request.user and request.user.groups.filter(name='Staff').exists() 
