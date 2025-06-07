@@ -1,5 +1,3 @@
-# your_app/management/commands/setup_groups.py
-
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -20,7 +18,7 @@ class Command(BaseCommand):
         )
         customer_group.permissions.set(customer_perms)
 
-        # Seller: add, change, view
+        # Seller: add, change, view 
         seller_group, _ = Group.objects.get_or_create(name='Seller')
         seller_perms = Permission.objects.filter(
             content_type= productPermissionFetch,

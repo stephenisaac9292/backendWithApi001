@@ -9,14 +9,14 @@ class ProductsDetailAPIView(generics.RetrieveAPIView):
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
     authentication_classes = []
-    permission_classes = [IsAuthenticated |IsCustomer| IsSeller | IsStaff]
+    permission_classes = [IsAuthenticated , IsCustomer| IsSeller | IsStaff]
 
 
 class ProductsListCreateAPIView(generics.ListCreateAPIView): 
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
     authentication_classes = []
-    permission_classes = [IsAuthenticated | IsSeller | IsStaff]
+    permission_classes = [IsAuthenticated , IsSeller | IsStaff]
 
     def perform_create(self, serializer):
         #serializer.save(user=self.request.user)form 
@@ -32,7 +32,7 @@ class ProductsUpdateAPIView(generics.UpdateAPIView):
     serializer_class = ProductsSerializer
     lookup_field = 'pk'
     authentication_classes = []
-    permission_classes = [IsAuthenticated | IsSeller | IsStaff]
+    permission_classes = [IsAuthenticated , IsSeller | IsStaff]
 
     def perform_update (self, serializer):
         title = serializer.validated_data.get('title')
@@ -48,7 +48,7 @@ class ProductsDestroyAPIView(generics.DestroyAPIView):
     serializer_class = ProductsSerializer
     lookup_field = 'pk'
     authentication_classes = []
-    permission_classes = [IsAuthenticated | IsSeller | IsStaff]
+    permission_classes = [IsAuthenticated, IsSeller | IsStaff]
 
     def perform_destroy (self, instance):
         super().perform_destroy(instance) 
