@@ -1,70 +1,44 @@
-from rest_framework import generics, serializers, permissions, authentication
-from .models import Products
-from .serializers import ProductsSerializer
-from products.permissions import IsAuthenticated, IsCustomer, IsSeller, IsStaff
-from api.authentication import TokenAuthentication
+from rest_framework import generics, mixins
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .permissions import IsSellerOnly
+from .models import Product
+from .serializers import ProductSerializer
 
+class ProductView(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.DestroyModelMixin,
+                  generics.GenericAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'pk'  # optional; default is 'pk'
 
+    def get_permissions(self):
+        method = self.request.method
+        if method == 'GET':
+            if self.kwargs.get('pk'):
+                return [IsAuthenticated()]  # optional: restrict single-view
+            return [AllowAny()]  # public list
+        elif method == 'POST':
+            return [IsAuthenticated(), IsSellerOnly()]
+        elif method in ['PUT', 'PATCH', 'DELETE']:
+            return [IsAuthenticated(), IsSellerOnly()]
+        return []
 
-class ProductsDetailAPIView(generics.RetrieveAPIView):
-    queryset = Products.objects.all()
-    serializer_class = ProductsSerializer
-    authentication_classes = []
-    permission_classes = [IsAuthenticated , IsCustomer| IsSeller | IsStaff]
+    def get(self, request, *args, **kwargs):
+        if 'pk' in kwargs:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
-class ProductsListCreateAPIView(generics.ListCreateAPIView): 
-    queryset = Products.objects.all()
-    serializer_class = ProductsSerializer
-    authentication_classes = [
-        authentication.SessionAuthentication,
-        TokenAuthentication,
-    ]
-    permission_classes = [IsAuthenticated , IsSeller | IsStaff]
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
-    def perform_create(self, serializer):
-        #serializer.save(user=self.request.user)form 
-        title = serializer.validated_data.get('title')
-        content = serializer.validated_data.get('content') or None
-        if content is None:
-            content= "No description available" 
-        serializer.save(content=content)
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
 
-
-class ProductsUpdateAPIView(generics.UpdateAPIView):
-    queryset = Products.objects.all()
-    serializer_class = ProductsSerializer
-    lookup_field = 'pk'
-    authentication_classes = []
-    permission_classes = [IsAuthenticated , IsSeller | IsStaff]
-
-    def perform_update (self, serializer):
-        title = serializer.validated_data.get('title')
-        content = serializer.validated_data.get('content')
-        
-        if not content:
-            content = title
-        serializer.save(content=content) 
-
-
-class ProductsDestroyAPIView(generics.DestroyAPIView):
-    queryset = Products.objects.all()
-    serializer_class = ProductsSerializer
-    lookup_field = 'pk'
-    authentication_classes = []
-    permission_classes = [IsAuthenticated, IsSeller | IsStaff]
-
-    def perform_destroy (self, instance):
-        super().perform_destroy(instance) 
-
-
-
- 
-
-
-
-
-
-
-
-
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
